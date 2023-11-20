@@ -1,0 +1,9 @@
+name: learn-monitoring-troubleshooting-exercises
+lang: unknown
+lang_version: unknown
+git:
+  enable: true
+github:
+  enable: true
+codeowners:
+  enable: true
