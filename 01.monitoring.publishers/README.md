@@ -1,5 +1,6 @@
-# Case Study 1: Deciphering Cluster Load
+# Case Study 1: Monitoring Kafka Producers in Python
 
+There is an easy startup guide for using Confluent Cloud over at https://developer.confluent.io/get-started/python/. A brief list of points is below as well.
 ## Setting up Confluent Cloud
 ### Cluster Setup
 1. Create an account on https://confluent.cloud
