@@ -1,0 +1,2 @@
+FROM confluentinc/cp-kafka:latest
+RUN cd /tmp && wget https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v2.0.0/opentelemetry-javaagent.jar

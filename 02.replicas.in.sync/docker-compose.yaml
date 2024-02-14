@@ -1,9 +1,11 @@
 version: '3'
 services:
   kafka1:
-    image: confluentinc/cp-kafka:latest
-    ports:
-      - "9092:9092"
+    container_name: kakfa1
+    build:
+      dockerfile: Dockerfile.kafka.otel
+    volumes:
+      - ./otel-kafka-broker-log4j.properties:/etc/kafka/log4j.properties:ro
     environment:
       CLUSTER_ID: q_ArPuYrTNe3KmEBVQ8CAA
       KAFKA_NODE_ID: 1
@@ -15,10 +17,20 @@ services:
       KAFKA_PROCESS_ROLES: "broker,controller"
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "CONTROLLER:PLAINTEXT,LISTENER:PLAINTEXT"
       KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER
+      OTEL_JMX_TARGET_SYSTEM: kafka-broker
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
+      OTEL_SERVICE_NAME: kafka1
+      OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
+      KAFKA_OPTS: "-javaagent:/tmp/opentelemetry-javaagent.jar"
+    depends_on:
+      - otel-collector
+
   kafka2:
-    image: confluentinc/cp-kafka:latest
-    ports:
-      - "9093:9092"
+    container_name: kakfa2
+    build:
+      dockerfile: Dockerfile.kafka.otel
+    volumes:
+      - ./otel-kafka-broker-log4j.properties:/etc/kafka/log4j.properties:ro
     environment:
       CLUSTER_ID: q_ArPuYrTNe3KmEBVQ8CAA
       KAFKA_NODE_ID: 2
@@ -30,10 +42,20 @@ services:
       KAFKA_PROCESS_ROLES: "broker,controller"
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "CONTROLLER:PLAINTEXT,LISTENER:PLAINTEXT"
       KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER
+      OTEL_JMX_TARGET_SYSTEM: kafka-broker
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
+      OTEL_SERVICE_NAME: kafka2
+      OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
+      KAFKA_OPTS: "-javaagent:/tmp/opentelemetry-javaagent.jar"
+    depends_on:
+      - otel-collector
+
   kafka3:
-    image: confluentinc/cp-kafka:latest
-    ports:
-      - "9094:9092"
+    container_name: kakfa3
+    build:
+      dockerfile: Dockerfile.kafka.otel
+    volumes:
+      - ./otel-kafka-broker-log4j.properties:/etc/kafka/log4j.properties:ro
     environment:
       CLUSTER_ID: q_ArPuYrTNe3KmEBVQ8CAA
       KAFKA_NODE_ID: 3
@@ -44,4 +66,31 @@ services:
       KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
       KAFKA_PROCESS_ROLES: "broker,controller"
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "CONTROLLER:PLAINTEXT,LISTENER:PLAINTEXT"
-      KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER      
+      KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER
+      OTEL_JMX_TARGET_SYSTEM: kafka-broker
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
+      OTEL_SERVICE_NAME: kafka3
+      OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
+      KAFKA_OPTS: "-javaagent:/tmp/opentelemetry-javaagent.jar"
+    depends_on:
+      - otel-collector
+
+  jupyter:
+    image: jupyter/minimal-notebook
+    ports:
+      - "8888:8888"
+    environment:
+      - JUPYTER_ENABLE_LAB=yes
+    command: "start-notebook.sh --NotebookApp.token='' --NotebookApp.password=''"
+    depends_on:
+      - kafka1
+      - kafka2
+      - kafka3
+  
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib
+    volumes:
+      - ./otel-collector-config.yaml:/etc/otelcol-contrib/config.yaml
+    ports:
+      - 4318:4318 # OTLP http receiver
+      - 55679:55679 # zpages extension
