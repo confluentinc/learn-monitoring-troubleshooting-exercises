@@ -4,8 +4,6 @@ services:
     container_name: kakfa1
     build:
       dockerfile: Dockerfile.kafka.otel
-    volumes:
-      - ./otel-kafka-broker-log4j.properties:/etc/kafka/log4j.properties:ro
     environment:
       CLUSTER_ID: q_ArPuYrTNe3KmEBVQ8CAA
       KAFKA_NODE_ID: 1
@@ -17,6 +15,11 @@ services:
       KAFKA_PROCESS_ROLES: "broker,controller"
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "CONTROLLER:PLAINTEXT,LISTENER:PLAINTEXT"
       KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER
+      KAFKA_REPLICA_LAG_TIME_MAX_MS: 5000
+      LOG4J_ROOTLOGGER: INFO, stdout, OTLP
+      LOG4J_APPENDER_OTLP: io.opentelemetry.exporter.otlp.log.OtlpHttpLogExporter
+      LOG4J_APPENDER_OTLP.LAYOUT: io.opentelemetry.exporter.otlp.logs.OtlpJsonLayout
+      LOG4J_APPENDER_OTLP_ENDPOINT: http://otel-collector:4318/v1/logs
       OTEL_JMX_TARGET_SYSTEM: kafka-broker
       OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
       OTEL_SERVICE_NAME: kafka1
@@ -29,8 +32,6 @@ services:
     container_name: kakfa2
     build:
       dockerfile: Dockerfile.kafka.otel
-    volumes:
-      - ./otel-kafka-broker-log4j.properties:/etc/kafka/log4j.properties:ro
     environment:
       CLUSTER_ID: q_ArPuYrTNe3KmEBVQ8CAA
       KAFKA_NODE_ID: 2
@@ -42,6 +43,11 @@ services:
       KAFKA_PROCESS_ROLES: "broker,controller"
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "CONTROLLER:PLAINTEXT,LISTENER:PLAINTEXT"
       KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER
+      KAFKA_REPLICA_LAG_TIME_MAX_MS: 5000
+      LOG4J_ROOTLOGGER: INFO, stdout, OTLP
+      LOG4J_APPENDER_OTLP: io.opentelemetry.exporter.otlp.log.OtlpHttpLogExporter
+      LOG4J_APPENDER_OTLP.LAYOUT: io.opentelemetry.exporter.otlp.logs.OtlpJsonLayout
+      LOG4J_APPENDER_OTLP_ENDPOINT: http://otel-collector:4318/v1/logs
       OTEL_JMX_TARGET_SYSTEM: kafka-broker
       OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
       OTEL_SERVICE_NAME: kafka2
@@ -54,8 +60,6 @@ services:
     container_name: kakfa3
     build:
       dockerfile: Dockerfile.kafka.otel
-    volumes:
-      - ./otel-kafka-broker-log4j.properties:/etc/kafka/log4j.properties:ro
     environment:
       CLUSTER_ID: q_ArPuYrTNe3KmEBVQ8CAA
       KAFKA_NODE_ID: 3
@@ -67,6 +71,11 @@ services:
       KAFKA_PROCESS_ROLES: "broker,controller"
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "CONTROLLER:PLAINTEXT,LISTENER:PLAINTEXT"
       KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER
+      KAFKA_REPLICA_LAG_TIME_MAX_MS: 5000
+      LOG4J_ROOTLOGGER: INFO, stdout, OTLP
+      LOG4J_APPENDER_OTLP: io.opentelemetry.exporter.otlp.log.OtlpHttpLogExporter
+      LOG4J_APPENDER_OTLP.LAYOUT: io.opentelemetry.exporter.otlp.logs.OtlpJsonLayout
+      LOG4J_APPENDER_OTLP_ENDPOINT: http://otel-collector:4318/v1/logs
       OTEL_JMX_TARGET_SYSTEM: kafka-broker
       OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
       OTEL_SERVICE_NAME: kafka3
@@ -76,6 +85,7 @@ services:
       - otel-collector
 
   jupyter:
+    container_name: jupyter
     image: jupyter/minimal-notebook
     ports:
       - "8888:8888"
@@ -88,6 +98,7 @@ services:
       - kafka3
   
   otel-collector:
+    container_name: otel-collector
     image: otel/opentelemetry-collector-contrib
     volumes:
       - ./otel-collector-config.yaml:/etc/otelcol-contrib/config.yaml
