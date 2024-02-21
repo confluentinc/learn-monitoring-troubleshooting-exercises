@@ -1,0 +1,16 @@
+FROM jupyter/minimal-notebook:latest
+#RUN apk add openjdk11  # Or a suitable JRE
+
+WORKDIR /opt
+USER root
+
+RUN apt-get update && \
+    apt-get install -y openjdk-11-jre-headless inetutils-ping
+
+# Download Kafka 
+RUN wget https://downloads.apache.org/kafka/3.6.1/kafka_2.13-3.6.1.tgz && \
+    tar -xzf kafka_2.13-3.6.1.tgz && \
+    rm kafka_2.13-3.6.1.tgz 
+
+USER jovyan
+WORKDIR /home/jovyan
