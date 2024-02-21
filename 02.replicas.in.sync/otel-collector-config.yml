@@ -8,7 +8,7 @@ exporters:
   otlp:
     endpoint: "https://otlp.nr-data.net:4318" 
     headers:
-      api-key: ***REMOVED***
+      api-key: <<new-relic-api-key>>
       
 service:
   pipelines:
