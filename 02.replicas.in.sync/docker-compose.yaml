@@ -7,10 +7,12 @@ x-kafka-configs: &kafka-configs
   KAFKA_REPLICA_LAG_TIME_MAX_MS: 500
 
 services:
-  kafka1:
+  kafka1: 
     container_name: kakfa1
     build:
       dockerfile: Dockerfile.kafka.otel
+    cpus: "0.5"
+    mem_limit: 512m
     environment: &kafka-base-env
       <<: *kafka-configs
       # Broker 
@@ -42,6 +44,8 @@ services:
     container_name: kakfa2
     build:
       dockerfile: Dockerfile.kafka.otel
+    cpus: "0.5"
+    mem_limit: 512m
     environment:
       <<: *kafka-base-env
       KAFKA_NODE_ID: 2
@@ -57,6 +61,8 @@ services:
     container_name: kakfa3
     build:
       dockerfile: Dockerfile.kafka.otel
+    cpus: "0.5"
+    mem_limit: 512m
     environment:
       <<: *kafka-base-env
       KAFKA_NODE_ID: 3
