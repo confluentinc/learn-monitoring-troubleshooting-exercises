@@ -5,7 +5,7 @@ WORKDIR /opt
 USER root
 
 RUN apt-get update && \
-    apt-get install -y openjdk-11-jre-headless inetutils-ping
+    apt-get install -y openjdk-11-jre-headless
 
 # Download Kafka 
 RUN wget https://downloads.apache.org/kafka/3.6.1/kafka_2.13-3.6.1.tgz && \

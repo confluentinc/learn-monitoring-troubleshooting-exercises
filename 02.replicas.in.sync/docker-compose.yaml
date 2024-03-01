@@ -4,7 +4,7 @@ x-kafka-configs: &kafka-configs
   KAFKA_DEFAULT_REPLICATION_FACTOR: 3
   KAFKA_MIN_INSYNC_REPLICAS: 2
   KAFKA_UNCLEAN_LEADER_ELECTION_ENABLE: false
-  KAFKA_REPLICA_LAG_TIME_MAX_MS: 500
+  KAFKA_REPLICA_LAG_TIME_MAX_MS: 1000
 
 services:
   kafka1: 
@@ -27,7 +27,7 @@ services:
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "CONTROLLER:PLAINTEXT,LISTENER:PLAINTEXT"
       KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER
       #######                                     Logging to OpenTelemetry
-      LOG4J_ROOTLOGGER: INFO, stdout, OTLP
+      LOG4J_ROOTLOGGER: DEBUG, stdout, OTLP
       LOG4J_APPENDER_OTLP: io.opentelemetry.exporter.otlp.log.OtlpHttpLogExporter
       LOG4J_APPENDER_OTLP.LAYOUT: io.opentelemetry.exporter.otlp.logs.OtlpJsonLayout
       LOG4J_APPENDER_OTLP_ENDPOINT: http://otel-collector:4318/v1/logs
@@ -46,6 +46,8 @@ services:
       dockerfile: Dockerfile.kafka.otel
     cpus: "0.5"
     mem_limit: 512m
+    cap_add:
+      - NET_ADMIN
     environment:
       <<: *kafka-base-env
       KAFKA_NODE_ID: 2

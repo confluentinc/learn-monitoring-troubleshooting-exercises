@@ -1,3 +1,9 @@
-FROM confluentinc/cp-kafka:latest
+FROM apache/kafka:latest
+USER root
+RUN apk update && \
+    apk add iproute2-tc
+
+# Go back to default alpine user
+USER appuser 
 RUN cd /tmp && \
     wget https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v2.0.0/opentelemetry-javaagent.jar
