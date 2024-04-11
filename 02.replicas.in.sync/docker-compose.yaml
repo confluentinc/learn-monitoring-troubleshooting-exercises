@@ -2,20 +2,18 @@ x-kafka-configs: &kafka-configs
   # Kafka Configs
   KAFKA_NUM_PARTITIONS: 3
   KAFKA_DEFAULT_REPLICATION_FACTOR: 3
-  KAFKA_MIN_INSYNC_REPLICAS: 2
+  KAFKA_MIN_INSYNC_REPLICAS: 3
   KAFKA_UNCLEAN_LEADER_ELECTION_ENABLE: false
-  KAFKA_REPLICA_LAG_TIME_MAX_MS: 1000
+  KAFKA_REPLICA_LAG_TIME_MAX_MS: 100
+  KAFKA_REPLICA_FETCH_WAIT_MAX_MS: 100
 
 services:
   kafka1: 
     container_name: kakfa1
     build:
       dockerfile: Dockerfile.kafka.otel
-    cpus: "0.5"
-    mem_limit: 512m
     environment: &kafka-base-env
       <<: *kafka-configs
-      # Broker 
       CLUSTER_ID: q_ArPuYrTNe3KmEBVQ8CAA
       KAFKA_NODE_ID: 1
       KAFKA_BROKER_ID: 1
@@ -36,16 +34,23 @@ services:
       OTEL_JMX_TARGET_SYSTEM: kafka-broker
       OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
       OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
+      OTEL_METRICS_EXPORT_INTERVAL: 1000 # Send every 1s
       KAFKA_OPTS: "-javaagent:/tmp/opentelemetry-javaagent.jar"
     depends_on:
       - otel-collector
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 512M
+        reservations:
+          cpus: "0.25"
+          memory: 128M
 
   kafka2:
     container_name: kakfa2
     build:
       dockerfile: Dockerfile.kafka.otel
-    cpus: "0.5"
-    mem_limit: 512m
     cap_add:
       - NET_ADMIN
     environment:
@@ -58,13 +63,20 @@ services:
       OTEL_SERVICE_NAME: "broker:kafka2"
     depends_on:
       - otel-collector
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 512M
+        reservations:
+          cpus: "0.25"
+          memory: 128M
+
 
   kafka3:
     container_name: kakfa3
     build:
       dockerfile: Dockerfile.kafka.otel
-    cpus: "0.5"
-    mem_limit: 512m
     environment:
       <<: *kafka-base-env
       KAFKA_NODE_ID: 3
@@ -75,6 +87,14 @@ services:
       OTEL_SERVICE_NAME: "broker:kafka3"
     depends_on:
       - otel-collector
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 512M
+        reservations:
+          cpus: "0.25"
+          memory: 128M
 
   jupyter:
     container_name: jupyter
