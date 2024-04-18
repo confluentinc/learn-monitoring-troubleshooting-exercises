@@ -4,8 +4,8 @@ x-kafka-configs: &kafka-configs
   KAFKA_DEFAULT_REPLICATION_FACTOR: 3
   KAFKA_MIN_INSYNC_REPLICAS: 3
   KAFKA_UNCLEAN_LEADER_ELECTION_ENABLE: false
-  KAFKA_REPLICA_LAG_TIME_MAX_MS: 100
-  KAFKA_REPLICA_FETCH_WAIT_MAX_MS: 100
+  KAFKA_REPLICA_LAG_TIME_MAX_MS: 1000
+  KAFKA_REPLICA_FETCH_WAIT_MAX_MS: 1000
 
 services:
   kafka1: 
@@ -34,18 +34,15 @@ services:
       OTEL_JMX_TARGET_SYSTEM: kafka-broker
       OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
       OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
-      OTEL_METRICS_EXPORT_INTERVAL: 1000 # Send every 1s
+      OTEL_METRIC_EXPORT_INTERVAL: 10000 # Send every 10s
       KAFKA_OPTS: "-javaagent:/tmp/opentelemetry-javaagent.jar"
     depends_on:
       - otel-collector
     deploy:
       resources:
-        limits:
-          cpus: "0.50"
-          memory: 512M
         reservations:
-          cpus: "0.25"
-          memory: 128M
+          cpus: "0.50"
+          memory: 1G
 
   kafka2:
     container_name: kakfa2
@@ -65,12 +62,9 @@ services:
       - otel-collector
     deploy:
       resources:
-        limits:
-          cpus: "0.50"
-          memory: 512M
         reservations:
-          cpus: "0.25"
-          memory: 128M
+          cpus: "0.50"
+          memory: 1G
 
 
   kafka3:
@@ -89,12 +83,10 @@ services:
       - otel-collector
     deploy:
       resources:
-        limits:
-          cpus: "0.50"
-          memory: 512M
         reservations:
-          cpus: "0.25"
-          memory: 128M
+          cpus: "0.50"
+          memory: 1G
+
 
   jupyter:
     container_name: jupyter
