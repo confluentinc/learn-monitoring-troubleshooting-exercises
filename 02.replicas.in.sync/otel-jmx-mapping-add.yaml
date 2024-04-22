@@ -1,0 +1,11 @@
+---
+rules:
+  # Additional metrics, on top of 
+  # https://github.com/open-telemetry/opentelemetry-java-instrumentation/tree/main/instrumentation/jmx-metrics/javaagent/src/main/resources/jmx/rules/kafka-broker.yaml
+  - bean: kafka.server:type=ReplicaManager,name=UnderMinIsrPartitionCount
+    mapping:
+      Value:
+        metric: kafka.partition.underMinIsr
+        type: updowncounter
+        desc: The number of partitions with less than min ISR replicas
+        unit: "{partitions}"
