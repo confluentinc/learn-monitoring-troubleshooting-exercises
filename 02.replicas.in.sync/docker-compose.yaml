@@ -32,16 +32,19 @@ services:
       #######                                     Metrics to OpenTelemetry
       OTEL_SERVICE_NAME: "broker:kafka1"
       OTEL_JMX_TARGET_SYSTEM: kafka-broker
+      OTEL_JMX_CONFIG: /tmp/otel-jmx-mapping-add.yaml
       OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
       OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
       OTEL_METRIC_EXPORT_INTERVAL: 10000 # Send every 10s
       KAFKA_OPTS: "-javaagent:/tmp/opentelemetry-javaagent.jar"
+    volumes:
+      - ./otel-jmx-mapping-add.yaml:/tmp/otel-jmx-mapping-add.yaml
     depends_on:
       - otel-collector
     deploy:
       resources:
         limits:
-          cpus: "0.25"
+          cpus: "0.5"
           memory: 1G      
 
   kafka2:
@@ -58,12 +61,14 @@ services:
       KAFKA_ADVERTISED_LISTENERS: LISTENER://kafka2:9092
       #######                                     Metrics to OpenTelemetry
       OTEL_SERVICE_NAME: "broker:kafka2"
+    volumes:
+      - ./otel-jmx-mapping-add.yaml:/tmp/otel-jmx-mapping-add.yaml
     depends_on:
       - otel-collector
     deploy:
       resources:
         limits:
-          cpus: "0.25"
+          cpus: "0.5"
           memory: 1G
 
   kafka3:
@@ -78,12 +83,14 @@ services:
       KAFKA_ADVERTISED_LISTENERS: LISTENER://kafka3:9092
       #######                                     Metrics to OpenTelemetry
       OTEL_SERVICE_NAME: "broker:kafka3"
+    volumes:
+      - ./otel-jmx-mapping-add.yaml:/tmp/otel-jmx-mapping-add.yaml
     depends_on:
       - otel-collector
     deploy:
       resources:
         limits:
-          cpus: "0.25"
+          cpus: "0.5"
           memory: 1G
 
 
