@@ -15,12 +15,10 @@ The ```-v``` is important since the Kafka images create volumes to store the mes
 ## Demos
 ### 00 Setup
 http://localhost:8888/lab/tree/work/00%20Setup.ipynb
-### 01 Bursty Traffic
-http://localhost:8888/lab/tree/work/01%20Bursty%20Traffic.ipynb
-### 02 Broker Failure
-http://localhost:8888/lab/tree/work/02%20Broker%20Failure.ipynb
-### 03 Transient Network Errors
-http://localhost:8888/lab/tree/work/03%20Transient%20Network%20Errors.ipynb
+### 01 Broker Failure
+http://localhost:8888/lab/tree/work/01%20Broker%20Failure.ipynb
+### 02 Transient Network Errors
+http://localhost:8888/lab/tree/work/02%20Transient%20Network%20Errors.ipynb
 
 
 ## Caveats
