@@ -3,12 +3,14 @@
 ## Prerequisites
 1. Docker
 2. New Relic Account with an Ingest license key
+    - While there, create a new dashboard by importing the json definition in this repo.
 
 ## Demo Setup & Shutdown
 ### Start
 ```docker compose up -d```
 ### End
 ```docker compose down -v```
+
 
 The ```-v``` is important since the Kafka images create volumes to store the messages and you do not want to reuse them across docker runs.
 
