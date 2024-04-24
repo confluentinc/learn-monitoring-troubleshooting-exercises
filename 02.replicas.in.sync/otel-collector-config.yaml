@@ -1,0 +1,20 @@
+receivers:
+  otlp:
+    protocols:
+      http:
+        endpoint: "0.0.0.0:4318"
+
+exporters:
+  otlp:
+    endpoint: "https://otlp.nr-data.net:4318" 
+    headers:
+      api-key: <<New Relic key>>
+      
+service:
+  pipelines:
+    logs:
+      receivers: [otlp]
+      exporters: [otlp]
+    metrics:
+      receivers: [otlp]
+      exporters: [otlp]

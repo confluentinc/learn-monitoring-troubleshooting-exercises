@@ -1,0 +1,121 @@
+x-kafka-configs: &kafka-configs
+  # Kafka Configs
+  KAFKA_NUM_PARTITIONS: 3
+  KAFKA_DEFAULT_REPLICATION_FACTOR: 3
+  KAFKA_MIN_INSYNC_REPLICAS: 3
+  KAFKA_UNCLEAN_LEADER_ELECTION_ENABLE: false
+  KAFKA_REPLICA_LAG_TIME_MAX_MS: 1000
+  KAFKA_REPLICA_FETCH_WAIT_MAX_MS: 1000
+
+services:
+  kafka1: 
+    container_name: kakfa1
+    build:
+      dockerfile: Dockerfile.kafka.otel
+    environment: &kafka-base-env
+      <<: *kafka-configs
+      CLUSTER_ID: q_ArPuYrTNe3KmEBVQ8CAA
+      KAFKA_NODE_ID: 1
+      KAFKA_BROKER_ID: 1
+      KAFKA_LISTENERS: "CONTROLLER://kafka1:9093,LISTENER://kafka1:9092"
+      KAFKA_ADVERTISED_LISTENERS: LISTENER://kafka1:9092
+      KAFKA_CONTROLLER_QUORUM_VOTERS: "1@kafka1:9093,2@kafka2:9093,3@kafka3:9093"
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_PROCESS_ROLES: "broker,controller"
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "CONTROLLER:PLAINTEXT,LISTENER:PLAINTEXT"
+      KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER
+      #######                                     Logging to OpenTelemetry
+      LOG4J_ROOTLOGGER: DEBUG, stdout, OTLP
+      LOG4J_APPENDER_OTLP: io.opentelemetry.exporter.otlp.log.OtlpHttpLogExporter
+      LOG4J_APPENDER_OTLP.LAYOUT: io.opentelemetry.exporter.otlp.logs.OtlpJsonLayout
+      LOG4J_APPENDER_OTLP_ENDPOINT: http://otel-collector:4318/v1/logs
+      #######                                     Metrics to OpenTelemetry
+      OTEL_SERVICE_NAME: "broker:kafka1"
+      OTEL_JMX_TARGET_SYSTEM: kafka-broker
+      OTEL_JMX_CONFIG: /tmp/otel-jmx-mapping-add.yaml
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
+      OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
+      OTEL_METRIC_EXPORT_INTERVAL: 10000 # Send every 10s
+      KAFKA_OPTS: "-javaagent:/tmp/opentelemetry-javaagent.jar"
+    volumes:
+      - ./otel-jmx-mapping-add.yaml:/tmp/otel-jmx-mapping-add.yaml
+    depends_on:
+      - otel-collector
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 1G      
+
+  kafka2:
+    container_name: kakfa2
+    build:
+      dockerfile: Dockerfile.kafka.otel
+    cap_add:
+      - NET_ADMIN
+    environment:
+      <<: *kafka-base-env
+      KAFKA_NODE_ID: 2
+      KAFKA_BROKER_ID: 2
+      KAFKA_LISTENERS: "CONTROLLER://kafka2:9093,LISTENER://kafka2:9092"
+      KAFKA_ADVERTISED_LISTENERS: LISTENER://kafka2:9092
+      #######                                     Metrics to OpenTelemetry
+      OTEL_SERVICE_NAME: "broker:kafka2"
+    volumes:
+      - ./otel-jmx-mapping-add.yaml:/tmp/otel-jmx-mapping-add.yaml
+    depends_on:
+      - otel-collector
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 1G
+
+  kafka3:
+    container_name: kakfa3
+    build:
+      dockerfile: Dockerfile.kafka.otel
+    environment:
+      <<: *kafka-base-env
+      KAFKA_NODE_ID: 3
+      KAFKA_BROKER_ID: 3
+      KAFKA_LISTENERS: "CONTROLLER://kafka3:9093,LISTENER://kafka3:9092"
+      KAFKA_ADVERTISED_LISTENERS: LISTENER://kafka3:9092
+      #######                                     Metrics to OpenTelemetry
+      OTEL_SERVICE_NAME: "broker:kafka3"
+    volumes:
+      - ./otel-jmx-mapping-add.yaml:/tmp/otel-jmx-mapping-add.yaml
+    depends_on:
+      - otel-collector
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 1G
+
+
+  jupyter:
+    container_name: jupyter
+    build:
+      dockerfile: Dockerfile.jupyter.kafka
+    ports:
+      - "8888:8888"
+    environment:
+      - JUPYTER_ENABLE_LAB=yes
+    volumes:
+      - ./notebooks:/home/jovyan/work/
+    command: "start-notebook.sh --NotebookApp.token='' --NotebookApp.password=''"
+    depends_on:
+      - kafka1
+      - kafka2
+      - kafka3
+  
+  otel-collector:
+    container_name: otel-collector
+    image: otel/opentelemetry-collector-contrib
+    volumes:
+      - ./otel-collector-config.yaml:/etc/otelcol-contrib/config.yaml
+    ports:
+      - 4318:4318 # OTLP http receiver
+      - 55679:55679 # zpages extension
+

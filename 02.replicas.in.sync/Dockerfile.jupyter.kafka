@@ -1,0 +1,17 @@
+FROM jupyter/minimal-notebook:latest
+
+USER root
+RUN apt-get update && \
+    apt-get install -y openjdk-11-jre-headless
+
+ARG KAFKA_VERSION=3.7.0
+WORKDIR /opt
+
+# Download Kafka to get CLI tools
+RUN wget https://downloads.apache.org/kafka/${KAFKA_VERSION}/kafka_2.13-${KAFKA_VERSION}.tgz && \
+    tar -xzf kafka_2.13-${KAFKA_VERSION}.tgz && \
+    rm kafka_2.13-${KAFKA_VERSION}.tgz 
+
+USER jovyan
+ENV PATH="$PATH:/opt/kafka_2.13-${KAFKA_VERSION}/bin"
+WORKDIR /home/jovyan
