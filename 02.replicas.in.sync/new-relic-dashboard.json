@@ -1,10 +1,10 @@
 {
-    "name": "M&T Troubleshooting",
+    "name": "When Replicas Are Not in Sync",
     "description": null,
     "permissions": "PUBLIC_READ_WRITE",
     "pages": [
       {
-        "name": "M&T Troubleshooting",
+        "name": "When Replicas Are Not in Sync",
         "description": null,
         "widgets": [
           {
