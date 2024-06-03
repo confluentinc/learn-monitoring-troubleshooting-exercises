@@ -1,0 +1,22 @@
+# Required connection configs for Kafka producer, consumer, and admin
+bootstrap.servers=
+security.protocol=SASL_SSL
+sasl.mechanisms=PLAIN
+sasl.username=
+sasl.password=
+
+# The following are properties the code needs but the Kafka clients would
+# choke on. The code is set to ignore anything that starts with confluent
+
+# Confluent Cluster ID - from the Confluent cloud website
+confluent.clusterid=
+
+# This should be relatively unchanged but check it just in case
+confluent.metrics.endpoint=https://api.telemetry.confluent.cloud/v2/metrics/cloud/query
+
+# Base 64 encoded Cloud Key to query metrics
+# This is very dangerous as it gives complete access to your top level org at Confluent Cloud
+# production use cases should use a service account with limited auth
+# Examples for this are on developer.confluent.io
+# To base64, on a unix-y machine: echo -n 'access_key:secret_key' | base64
+confluent.cloud_api_token=
