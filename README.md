@@ -1,7 +1,7 @@
 # learn-monitoring-troubleshooting
 Exercises component of the Monitoring &amp; Troubleshooting Data Streaming Applications course
 
-## Case Study 1: Monitoring Kafka Publishers in Python
+## Case Study 1: Monitoring Kafka Producers in Python
 Holistic: Get a feel for how monitoring works in the librdkafka based Python Kafka Producer client
 Kafka: Impact of linger.ms on message latency
 Monitoring: Python client, librdkafka, Confluent Cloud Metrics API, Logs
