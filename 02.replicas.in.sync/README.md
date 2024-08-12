@@ -1,5 +1,11 @@
 # 02 When Replicas Are Not in Sync
 
+## Architecture
+### Docker Containers
+![Docker Containers](https://raw.githubusercontent.com/confluentinc/learn-monitoring-troubleshooting-exercises/main/02.replicas.in.sync/docker-architecture.jpg)
+### Logs and Metrics to NewRelic
+![Monitoring Setup](https://raw.githubusercontent.com/confluentinc/learn-monitoring-troubleshooting-exercises/main/02.replicas.in.sync/monitoring-architecture.jpg)
+
 ## Prerequisites
 1. Docker
     -  Install [Docker Desktop](https://docs.docker.com/desktop/) (version 4.27.2 or later) or [Docker Engine](https://docs.docker.com/engine/install/) (version 25.0.3 or later) if you don’t already have it
