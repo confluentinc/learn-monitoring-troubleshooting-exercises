@@ -4,7 +4,7 @@ USER root
 RUN apt-get update && \
     apt-get install -y openjdk-11-jre-headless
 
-ARG KAFKA_VERSION=3.7.0
+ARG KAFKA_VERSION=4.0.0
 WORKDIR /opt
 
 # Download Kafka to get CLI tools
